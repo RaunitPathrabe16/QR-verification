@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Certificate Verification</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <h2>🔍 Certificate Verification</h2>
+    <input type="text" id="internID" placeholder="Enter Intern ID">
+    <button onclick="verifyCertificate()">Verify</button>
+    
+    <h3>📷 Scan QR Code</h3>
+    <button onclick="startQRScanner()">Start Scanner</button>
+    <div id="reader"></div>
+
+    <h3>🔗 Generate QR Code</h3>
+    <button onclick="generateQRCode()">Generate QR</button>
+    <div id="qrcode"></div>
+
+    <div id="output"></div>
+
+    <script>
+        function verifyCertificate() {
+            let internID = document.getElementById("internID").value;
+            fetch("data.json")
+                .then(response => response.json())
+                .then(data => {
+                    let certificate = data.find(cert => cert.internID === internID);
+                    if (certificate) {
+                        document.getElementById("output").innerHTML = `
+                            <h3>✅ Certificate Verified</h3>
+                            <p><b>Name:</b> ${certificate.name}</p>
+                            <p><b>Start Date:</b> ${certificate.startDate}</p>
+                            <p><b>End Date:</b> ${certificate.endDate}</p>
+                            <p><b>Issue Date:</b> ${certificate.issueDate}</p>
+                            <p><b>Duration:</b> ${certificate.duration}</p>
+                            <p><b>Status:</b> ${certificate.status}</p>
+                            <p><a href="${certificate.certificateLink}" target="_blank">📜 View Certificate</a></p>
+                        `;
+                    } else {
+                        document.getElementById("output").innerHTML = "<p style='color:red;'>❌ Certificate Not Found</p>";
+                    }
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
